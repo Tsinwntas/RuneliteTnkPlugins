@@ -41,10 +41,10 @@ public class SpicyStew implements Effect
 		/*
 		 * Spice boosts listed in the colour order of [Spicy stew -> Smell]
 		 */
-		int redBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_RED_SPICES));
-		int yellowBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_YELLOW_SPICES));
-		int orangeBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_ORANGE_SPICES));
-		int brownBoost = spiceBoostOf(client.getVar(Varbits.SPICY_STEW_BROWN_SPICES));
+		int redBoost = spiceBoostOf(client.getVarbitValue(Varbits.SPICY_STEW_RED_SPICES));
+		int yellowBoost = spiceBoostOf(client.getVarbitValue(Varbits.SPICY_STEW_YELLOW_SPICES));
+		int orangeBoost = spiceBoostOf(client.getVarbitValue(Varbits.SPICY_STEW_ORANGE_SPICES));
+		int brownBoost = spiceBoostOf(client.getVarbitValue(Varbits.SPICY_STEW_BROWN_SPICES));
 
 		List<StatChange> changes = new ArrayList<>();
 
@@ -132,11 +132,14 @@ public class SpicyStew implements Effect
 		int currentBoost = currentValue - currentBase; // Can be negative
 		int spiceBoostCapped = (currentBoost <= 0) ? spiceBoost : Math.max(0, spiceBoost - currentBoost);
 
-		StatChange change = new StatChange();
+		final RangeStatChange change = new RangeStatChange();
 		change.setStat(stat);
-		change.setRelative("±" + spiceBoostCapped);
-		change.setTheoretical("±" + spiceBoost);
-		change.setAbsolute(String.valueOf(stat.getValue(client) + spiceBoostCapped));
+		change.setMinRelative(-spiceBoost);
+		change.setRelative(spiceBoostCapped);
+		change.setMinTheoretical(-spiceBoost);
+		change.setTheoretical(spiceBoost);
+		change.setMinAbsolute(Math.max(-spiceBoost, -currentValue));
+		change.setAbsolute(stat.getValue(client) + spiceBoostCapped);
 
 		Positivity positivity;
 		if (spiceBoostCapped == 0)
@@ -155,5 +158,4 @@ public class SpicyStew implements Effect
 
 		return change;
 	}
-
 }

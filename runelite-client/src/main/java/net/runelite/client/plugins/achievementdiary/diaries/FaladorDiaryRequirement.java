@@ -84,7 +84,7 @@ public class FaladorDiaryRequirement extends GenericDiaryRequirement
 			new SkillRequirement(Skill.MAGIC, 37));
 
 		// HARD
-		add("Craft 140 Mind runes simultaneously.",
+		add("Craft 140 Mind runes simultaneously from Essence.",
 			new SkillRequirement(Skill.RUNECRAFT, 56));
 		add("Change your family crest to the Saradomin symbol.",
 			new SkillRequirement(Skill.PRAYER, 70));
@@ -94,6 +94,8 @@ public class FaladorDiaryRequirement extends GenericDiaryRequirement
 			new SkillRequirement(Skill.AGILITY, 50));
 		add("Enter the mining guild wearing full prospector.",
 			new SkillRequirement(Skill.MINING, 60));
+		add("Kill the Blue Dragon under the Heroes' Guild.",
+			new QuestRequirement(Quest.HEROES_QUEST));
 		add("Crack a wall safe within Rogues Den.",
 			new SkillRequirement(Skill.THIEVING, 50));
 		add("Recharge your prayer in the Port Sarim church while wearing full Proselyte.",
@@ -104,7 +106,7 @@ public class FaladorDiaryRequirement extends GenericDiaryRequirement
 			new QuestRequirement(Quest.GRIM_TALES));
 
 		// ELITE
-		add("Craft 252 Air Runes simultaneously.",
+		add("Craft 252 Air Runes simultaneously from Essence.",
 			new SkillRequirement(Skill.RUNECRAFT, 88));
 		add("Purchase a White 2h Sword from Sir Vyvin.",
 			new QuestRequirement(Quest.WANTED));

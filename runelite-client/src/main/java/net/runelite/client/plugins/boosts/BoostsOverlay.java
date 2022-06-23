@@ -27,21 +27,20 @@ package net.runelite.client.plugins.boosts;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.Skill;
-import net.runelite.client.ui.overlay.Overlay;
+import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.OverlayPriority;
 import net.runelite.client.ui.overlay.components.LineComponent;
-import net.runelite.client.ui.overlay.components.PanelComponent;
 import net.runelite.client.util.ColorUtil;
 
-class BoostsOverlay extends Overlay
+class BoostsOverlay extends OverlayPanel
 {
 	private final Client client;
 	private final BoostsConfig config;
-	private final PanelComponent panelComponent = new PanelComponent();
 	private final BoostsPlugin plugin;
 
 	@Inject
@@ -58,15 +57,13 @@ class BoostsOverlay extends Overlay
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (config.displayIndicators())
+		final Set<Skill> boostedSkills = plugin.getSkillsToDisplay();
+		if (boostedSkills.isEmpty() || !config.displayPanel())
 		{
 			return null;
 		}
 
-		panelComponent.getChildren().clear();
-
 		int nextChange = plugin.getChangeDownTicks();
-
 		if (nextChange != -1)
 		{
 			panelComponent.getChildren().add(LineComponent.builder()
@@ -76,7 +73,6 @@ class BoostsOverlay extends Overlay
 		}
 
 		nextChange = plugin.getChangeUpTicks();
-
 		if (nextChange != -1)
 		{
 			panelComponent.getChildren().add(LineComponent.builder()
@@ -87,16 +83,10 @@ class BoostsOverlay extends Overlay
 
 		if (plugin.canShowBoosts())
 		{
-			for (Skill skill : plugin.getShownSkills())
+			for (Skill skill : boostedSkills)
 			{
 				final int boosted = client.getBoostedSkillLevel(skill);
 				final int base = client.getRealSkillLevel(skill);
-
-				if (boosted == base)
-				{
-					continue;
-				}
-
 				final int boost = boosted - base;
 				final Color strColor = getTextColor(boost);
 				String str;
@@ -123,7 +113,7 @@ class BoostsOverlay extends Overlay
 			}
 		}
 
-		return panelComponent.render(graphics);
+		return super.render(graphics);
 	}
 
 	private Color getTextColor(int boost)
@@ -133,7 +123,6 @@ class BoostsOverlay extends Overlay
 			return new Color(238, 51, 51);
 		}
 
-		return boost < config.boostThreshold() ? Color.YELLOW : Color.GREEN;
-
+		return boost <= config.boostThreshold() ? Color.YELLOW : Color.GREEN;
 	}
 }

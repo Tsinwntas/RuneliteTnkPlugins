@@ -40,7 +40,7 @@ public class ArdougneDiaryRequirement extends GenericDiaryRequirement
 			new QuestRequirement(Quest.RUNE_MYSTERIES));
 		add("Steal a cake from the Ardougne market stalls.",
 			new SkillRequirement(Skill.THIEVING, 5));
-		add("Enter the Combat Training Camp north of W. Ardougne",
+		add("Enter the Combat Training Camp north of W. Ardougne.",
 			new QuestRequirement(Quest.BIOHAZARD));
 
 		// MEDIUM
@@ -77,11 +77,15 @@ public class ArdougneDiaryRequirement extends GenericDiaryRequirement
 			new QuestRequirement(Quest.FAIRYTALE_II__CURE_A_QUEEN, true));
 
 		// HARD
+		// When the task is completed "the Totem" changes to "Totem" - so we add
+		// both variations.
+		add("Recharge some Jewellery at the Totem in the Legends Guild.",
+			new QuestRequirement(Quest.LEGENDS_QUEST));
 		add("Recharge some Jewellery at Totem in the Legends Guild.",
 			new QuestRequirement(Quest.LEGENDS_QUEST));
 		add("Enter the Magic Guild.",
 			new SkillRequirement(Skill.MAGIC, 66));
-		add("Attempt to steal from King Lathas' chest.",
+		add("Attempt to steal from a chest in Ardougne Castle.",
 			new SkillRequirement(Skill.THIEVING, 72));
 		add("Have a zookeeper put you in Ardougne Zoo's monkey cage.",
 			new QuestRequirement(Quest.MONKEY_MADNESS_I, true));
@@ -101,9 +105,9 @@ public class ArdougneDiaryRequirement extends GenericDiaryRequirement
 		add("Smith a Dragon sq shield in West Ardougne.",
 			new SkillRequirement(Skill.SMITHING, 60),
 			new QuestRequirement(Quest.LEGENDS_QUEST));
-		add("Craft some Death runes.",
+		add("Craft some Death runes from Essence.",
 			new SkillRequirement(Skill.RUNECRAFT, 65),
-			new QuestRequirement(Quest.MOURNINGS_ENDS_PART_II));
+			new QuestRequirement(Quest.MOURNINGS_END_PART_II));
 
 		// ELITE
 		add("Catch a Manta ray in the Fishing Trawler and cook it in Port Khazard.",

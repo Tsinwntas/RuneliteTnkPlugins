@@ -25,11 +25,31 @@
 package net.runelite.client.plugins.cluescrolls.clues;
 
 import java.awt.Graphics2D;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import net.runelite.api.annotations.Varbit;
 import net.runelite.client.plugins.cluescrolls.ClueScrollPlugin;
 import net.runelite.client.ui.overlay.components.PanelComponent;
 
 public abstract class ClueScroll
 {
+	@Setter(AccessLevel.PROTECTED)
+	@Getter(AccessLevel.PUBLIC)
+	private boolean requiresSpade;
+
+	@Setter(AccessLevel.PROTECTED)
+	@Getter(AccessLevel.PUBLIC)
+	private boolean requiresLight;
+
+	@Setter(AccessLevel.PROTECTED)
+	@Getter(onMethod_ = {@Varbit}, value = AccessLevel.PUBLIC)
+	private int firePitVarbitId = -1;
+
+	@Setter(AccessLevel.PROTECTED)
+	@Getter(AccessLevel.PUBLIC)
+	private Enemy enemy;
+
 	public abstract void makeOverlayHint(PanelComponent panelComponent, ClueScrollPlugin plugin);
 
 	public abstract void makeWorldOverlayHint(Graphics2D graphics, ClueScrollPlugin plugin);

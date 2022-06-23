@@ -24,12 +24,14 @@
  */
 package net.runelite.client.plugins.inventoryviewer;
 
-import static net.runelite.api.MenuAction.RUNELITE_OVERLAY_CONFIG;
+import com.google.inject.Provides;
+import javax.inject.Inject;
+import net.runelite.client.config.ConfigManager;
+import net.runelite.client.input.KeyManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import javax.inject.Inject;
 import net.runelite.client.ui.overlay.OverlayManager;
-import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
+import net.runelite.client.util.HotkeyListener;
 
 @PluginDescriptor(
 	name = "Inventory Viewer",
@@ -40,22 +42,43 @@ import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
 public class InventoryViewerPlugin extends Plugin
 {
 	@Inject
+	private InventoryViewerConfig config;
+
+	@Inject
 	private InventoryViewerOverlay overlay;
 
 	@Inject
 	private OverlayManager overlayManager;
 
+	@Inject
+	private KeyManager keyManager;
+
+	@Provides
+	InventoryViewerConfig getConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(InventoryViewerConfig.class);
+	}
+
 	@Override
 	public void startUp()
 	{
 		overlayManager.add(overlay);
-		overlayManager.addMenu(overlay, RUNELITE_OVERLAY_CONFIG, OPTION_CONFIGURE, "Inventory viewer overlay");
+		keyManager.registerKeyListener(hotkeyListener);
 	}
 
 	@Override
 	public void shutDown()
 	{
-		overlayManager.removeMenu(overlay, OPTION_CONFIGURE);
 		overlayManager.remove(overlay);
+		keyManager.unregisterKeyListener(hotkeyListener);
 	}
+
+	private final HotkeyListener hotkeyListener = new HotkeyListener(() -> config.toggleKeybind())
+	{
+		@Override
+		public void hotkeyPressed()
+		{
+			overlay.toggle();
+		}
+	};
 }
