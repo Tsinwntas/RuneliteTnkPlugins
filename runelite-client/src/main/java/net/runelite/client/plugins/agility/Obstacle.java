@@ -33,7 +33,7 @@ import net.runelite.client.game.AgilityShortcut;
 
 @Value
 @AllArgsConstructor
-class Obstacle
+public class Obstacle
 {
 	private final Tile tile;
 	@Nullable
