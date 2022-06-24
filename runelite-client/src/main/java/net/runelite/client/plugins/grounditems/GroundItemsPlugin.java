@@ -83,6 +83,7 @@ import net.runelite.client.input.KeyManager;
 import net.runelite.client.input.MouseManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.botutils.Utils;
 import net.runelite.client.plugins.grounditems.config.HighlightTier;
 import net.runelite.client.plugins.grounditems.config.ItemHighlightMode;
 import net.runelite.client.plugins.grounditems.config.MenuHighlightMode;
@@ -196,6 +197,7 @@ public class GroundItemsPlugin extends Plugin
 		keyManager.registerKeyListener(hotkeyListener);
 		executor.execute(this::reset);
 		lastUsedItem = -1;
+		Utils.setItemsPlugin(this);
 	}
 
 	@Override

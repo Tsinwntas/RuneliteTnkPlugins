@@ -1,10 +1,7 @@
 package net.runelite.client.plugins.botutils;
 
 import com.google.common.collect.Table;
-import net.runelite.api.Client;
-import net.runelite.api.ItemComposition;
-import net.runelite.api.ItemID;
-import net.runelite.api.TileObject;
+import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.client.plugins.agility.AgilityPlugin;
@@ -74,7 +71,19 @@ public class AgilityTask extends BotTask {
 
     @Override
     protected void performAction() {
+        Tile mark = null;
+        if(currentState != TaskState.MOVING && agilityPlugin.getMarksOfGrace().size()>0) {
+            mark = agilityPlugin.getMarksOfGrace().get(0);
+            if(Utils.isCloseToPlayer(mark.getWorldLocation(),10) && mark.getWorldLocation().getPlane()==client.getLocalPlayer().getWorldLocation().getPlane())
+                currentState = TaskState.PICKING_UP_TOKEN;
+        }
         switch (currentState) {
+            case PICKING_UP_TOKEN:
+                moveToTarget(mark.getItemLayer());
+                Utils.sleep();
+                Utils.click();
+                currentState = TaskState.MOVING;
+                break;
             case COURSING:
                 TileObject[] targetTile = new TileObject[1];
                 Obstacle[] targetObstacle = new Obstacle[1];
@@ -102,10 +111,9 @@ public class AgilityTask extends BotTask {
             case MOVING:
                 if(!locatingTarget) {
                     if (lastPlayerLocation != null && lastPlayerLocation.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) {
-                        System.out.println("STOPPED MOVING");
                         Utils.sleep();
                         lastPlayerLocation = null;
-                        currentState = TaskState.TIMED_OUT;
+                        currentState = TaskState.COURSING;
                     }else{
                         lastPlayerLocation = client.getLocalPlayer().getWorldLocation();
                         Utils.sleep(300);
@@ -113,10 +121,10 @@ public class AgilityTask extends BotTask {
                     break;
                 }
                 System.out.println("Locating Target");
-            case PICKING_UP_TOKEN:
+            case TIMED_OUT:
                 if ((timeout -= 500) <= 0) {
                     System.out.println("TIMED OUT!");
-                    currentState = TaskState.TIMED_OUT;
+                    currentState = TaskState.COURSING;
                     timeout = 2000;
                 }
                 break;

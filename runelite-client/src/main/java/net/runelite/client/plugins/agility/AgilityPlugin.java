@@ -78,6 +78,7 @@ import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.botutils.Utils;
 import net.runelite.client.plugins.xptracker.XpTrackerPlugin;
 import net.runelite.client.plugins.xptracker.XpTrackerService;
 import net.runelite.client.ui.overlay.OverlayManager;
@@ -159,6 +160,7 @@ public class AgilityPlugin extends Plugin
 		overlayManager.add(agilityOverlay);
 		overlayManager.add(lapCounterOverlay);
 		agilityLevel = client.getBoostedSkillLevel(AGILITY);
+		Utils.setAgilityPlugin(this);
 	}
 
 	@Override
@@ -241,6 +243,7 @@ public class AgilityPlugin extends Plugin
 		int agilityXp = client.getSkillExperience(AGILITY);
 		int skillGained = agilityXp - lastAgilityXp;
 		lastAgilityXp = agilityXp;
+		Utils.incrementAgility();
 
 		// Get course
 		Courses course = Courses.getCourse(client.getLocalPlayer().getWorldLocation().getRegionID());
@@ -262,6 +265,7 @@ public class AgilityPlugin extends Plugin
 			// New course found, reset lap count and set new course
 			session.resetLapCount();
 			session.incrementLapCount(client, xpTrackerService);
+			Utils.resetAgility();
 		}
 	}
 
