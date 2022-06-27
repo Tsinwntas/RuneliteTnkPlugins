@@ -126,8 +126,8 @@ public class Utils {
         WorldPoint currentTarget = worldLocation;
         WorldPoint player = client.getLocalPlayer().getWorldLocation();
         while(!isCloseToPlayer(currentTarget,maxDistance)){
-            currentTarget = new WorldPoint((currentTarget.getX()+ player.getX())/2,
-                    (currentTarget.getY()+player.getY())/2,
+            currentTarget = new WorldPoint((int)((Math.random()<0.5 ? -1 : 1) * (Math.random()*3)+(currentTarget.getX()+ player.getX())/2),
+                    (int)((Math.random()<0.5 ? -1 : 1) * (Math.random()*3)+((currentTarget.getY()+player.getY())/2)),
                     player.getPlane());
         }
         return currentTarget;
