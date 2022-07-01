@@ -44,7 +44,7 @@ public abstract class BotTask extends Thread {
 
     protected abstract void performAction();
 
-    public abstract void onChatChecks(String msg);
+    public void onChatChecks(String msg){};
 
     public abstract void onRenderChecks();
 }

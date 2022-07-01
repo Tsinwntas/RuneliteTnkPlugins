@@ -95,7 +95,7 @@ public class BotPluginPlugin extends Plugin
 	private BotPluginSceneOverlay npcSceneOverlay;
 
 	@Inject
-	private BotPluginMinimapOverlay npcMinimapOverlay;
+	private BotPluginMinimapOverlay overlay;
 
 	@Inject
 	private ClientThread clientThread;
@@ -176,6 +176,7 @@ public class BotPluginPlugin extends Plugin
 	{
 		npcOverlayService.registerHighlighter(isHighlighted);
 		overlayManager.add(npcRespawnOverlay);
+		overlayManager.add(overlay);
 		clientThread.invoke(() ->
 		{
 			skipNextSpawnCheck = true;

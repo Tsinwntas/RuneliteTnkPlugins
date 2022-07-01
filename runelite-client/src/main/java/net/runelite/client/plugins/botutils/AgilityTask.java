@@ -46,9 +46,6 @@ public class AgilityTask extends BotTask {
 
     public AgilityPlugin agilityPlugin;
 
-    //EXTRAS
-    private final int TOKEN_ID = 4161;
-
     private enum TaskState {
         COURSING,
         PICKING_UP_TOKEN,
@@ -60,7 +57,6 @@ public class AgilityTask extends BotTask {
     private int index;
     private AgilityCourse course;
     private WorldPoint lastPlayerLocation;
-    private boolean locatingTarget;
 
     public AgilityTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {
         super(client, config, plugin, itemsPlugin);
@@ -79,9 +75,7 @@ public class AgilityTask extends BotTask {
         }
         switch (currentState) {
             case PICKING_UP_TOKEN:
-                moveToTarget(mark.getItemLayer());
-                Utils.sleep();
-                Utils.click();
+                Utils.moveToTarget(mark.getItemLayer());
                 currentState = TaskState.MOVING;
                 break;
             case COURSING:
@@ -97,33 +91,28 @@ public class AgilityTask extends BotTask {
                 });
                 if (currentState == TaskState.PICKING_UP_TOKEN)
                     break;
-                System.out.println(index + "*****************************************");
                 if (client.getLocalPlayer().getWorldLocation().getPlane() == 0 && index != 0) {
                     reset();
                     break;
                 }
 
-                moveToTarget(targetTile[0]);
-                Utils.sleep();
-                Utils.click();
+                Utils.moveToTarget(targetTile[0]);
                 currentState = TaskState.MOVING;
                 break;
             case MOVING:
-                if(!locatingTarget) {
-                    if (lastPlayerLocation != null && lastPlayerLocation.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) {
-                        Utils.sleep();
-                        lastPlayerLocation = null;
-                        currentState = TaskState.COURSING;
-                    }else{
-                        lastPlayerLocation = client.getLocalPlayer().getWorldLocation();
-                        Utils.sleep(300);
-                    }
-                    break;
-                }
-                System.out.println("Locating Target");
+                if(Utils.isIdle())
+                    currentState = TaskState.COURSING;
+//                if (lastPlayerLocation != null && lastPlayerLocation.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) {
+//                    Utils.sleep();
+//                    lastPlayerLocation = null;
+//                    currentState = TaskState.COURSING;
+//                }else{
+//                    lastPlayerLocation = client.getLocalPlayer().getWorldLocation();
+//                    Utils.sleep(300);
+//                }
+                break;
             case TIMED_OUT:
                 if ((timeout -= 500) <= 0) {
-                    System.out.println("TIMED OUT!");
                     currentState = TaskState.COURSING;
                     timeout = 2000;
                 }
@@ -131,22 +120,6 @@ public class AgilityTask extends BotTask {
             default:
                 break;
         }
-
-    }
-
-    private void moveToTarget(TileObject tileObject) {
-        if (tileObject.getClickbox() == null || !Utils.isCloseToPlayer(tileObject.getWorldLocation(),15)) {
-            locatingTarget = true;
-            WorldPoint target = Utils.findClosesTileInPath(tileObject.getWorldLocation(),15);
-            Utils.pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client,target)),0,0,5);
-        } else {
-            locatingTarget=false;
-            Utils.pointAt(Utils.getRandomPointInShape(tileObject.getClickbox()));
-        }
-    }
-
-    @Override
-    public void onChatChecks(String msg) {
 
     }
 
@@ -164,7 +137,7 @@ public class AgilityTask extends BotTask {
             if (itemDefinition.getId() == ItemID.MARK_OF_GRACE) {
                 if (currentState != TaskState.PICKING_UP_TOKEN) {
                     currentState = TaskState.PICKING_UP_TOKEN;
-                    pickUpItem(item);
+                    Utils.pickUpItem(item);
                 }
                 return;
             }
@@ -174,22 +147,13 @@ public class AgilityTask extends BotTask {
         }
     }
 
-    private void pickUpItem(GroundItem item) {
-        Utils.pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client, item.getLocation())));
-        Utils.sleep();
-        Utils.click();
-        Utils.sleep();
-    }
-
     public void increment() {
         index = (index + 1) % course.obstacles.length;
         Utils.sleep();
-//        currentState = TaskState.COURSING;
     }
 
     public void reset() {
         index = 0;
-//        currentState = TaskState.COURSING;
     }
 
 }

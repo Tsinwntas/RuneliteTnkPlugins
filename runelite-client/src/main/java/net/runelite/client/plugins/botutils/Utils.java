@@ -1,8 +1,6 @@
 package net.runelite.client.plugins.botutils;
 
-import net.runelite.api.Client;
-import net.runelite.api.NPC;
-import net.runelite.api.Perspective;
+import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -14,11 +12,14 @@ import net.runelite.api.widgets.WidgetItem;
 import net.runelite.client.plugins.agility.AgilityPlugin;
 import net.runelite.client.plugins.botplugin.BotPluginConfig;
 import net.runelite.client.plugins.botplugin.BotPluginPlugin;
+import net.runelite.client.plugins.grounditems.GroundItem;
 import net.runelite.client.plugins.grounditems.GroundItemsPlugin;
+import net.runelite.client.plugins.motherlode.MotherlodePlugin;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Random;
 
 public class Utils {
@@ -26,10 +27,13 @@ public class Utils {
     private static Client client;
     private static GroundItemsPlugin itemsPlugin;
     private static AgilityPlugin agilityPlugin;
+    private static MotherlodePlugin motherlodePlugin;
     private static Canvas canvas;
     public static BotTask bot;
     private static Point location;
     private static BotPluginConfig config;
+
+    private static WorldPoint lastPlayerLocation;
 
 //    private Utils(LootManager lootManager) {
 ////        this.client = client;
@@ -104,7 +108,7 @@ public class Utils {
     }
 
     public static void pointAtSpellbookSlot(int index, int offset) {
-        pointAtWidget(client.getWidget(WidgetID.SPELLBOOK_GROUP_ID, 5 + index), index, offset);
+        pointAtWidget(client.getWidget(WidgetID.SPELLBOOK_GROUP_ID, 5 + index), offset);
     }
 
     public static void pointAtWidgetSlot(Widget w, int index, int offset) {
@@ -113,9 +117,19 @@ public class Utils {
                 slot.getCanvasLocation().getY() + slot.getCanvasBounds().height / 2 - 3), offset);
     }
 
-    public static void pointAtWidget(Widget w, int index, int offset) {
+    public static void pointAtWidget(Widget w, int offset) {
         pointAt(new Point(w.getCanvasLocation().getX() + w.getWidth() / 2 + w.getWidth() / 4 - 3,
                 w.getCanvasLocation().getY() + w.getHeight() / 4 + 3), offset);
+    }
+
+    public static void clickWidget(Widget w){
+        clickWidget(w,3);
+    }
+
+    public static void clickWidget(Widget w, int offset){
+        pointAtWidget(w,offset);
+        sleep();
+        click();
     }
 
     public static boolean isCloseToPlayer(WorldPoint currentTarget, int maxDistance) {
@@ -147,6 +161,8 @@ public class Utils {
     public static void extraPlugins(BotPluginConfig config) {
         if (Utils.config.bottingType() == TaskType.AGILITY)
             ((AgilityTask) bot).agilityPlugin = agilityPlugin;
+        if (Utils.config.bottingType() == TaskType.MOTHERLOAD)
+            ((MotherLodeTask) bot).motherlodePlugin = motherlodePlugin;
     }
 
     public static void stop() {
@@ -172,8 +188,37 @@ public class Utils {
         }
     }
 
-    public Point getMouseLocation() {
-        return location;
+    public static boolean isIdle() {
+        return client.getLocalPlayer().getAnimation() == AnimationID.IDLE && isNotMoving();
+//        if(idle_){
+//            idle_ = false;
+//            return true;
+//        }
+//        return false;
+    }
+
+    public static boolean isNotMoving() {
+        if (lastPlayerLocation != null && lastPlayerLocation.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) {
+            sleep();
+            lastPlayerLocation = null;
+            return true;
+        }else{
+            lastPlayerLocation = client.getLocalPlayer().getWorldLocation();
+            sleep(300);
+            return false;
+        }
+    }
+
+    public static boolean isInventoryFull() {
+        return client.getItemContainer(InventoryID.INVENTORY) != null && Arrays.stream(client.getItemContainer(InventoryID.INVENTORY).getItems()).filter(i->i.getId()!=-1).count()==28;
+    }
+
+    public static boolean isInventoryEmpty() {
+        return isInventoryEmpty(0);
+    }
+
+    public static boolean isInventoryEmpty(int leeway) {
+        return client.getItemContainer(InventoryID.INVENTORY) == null || Arrays.stream(client.getItemContainer(InventoryID.INVENTORY).getItems()).filter(i->i.getId()==-1).count()>=(client.getItemContainer(InventoryID.INVENTORY).getItems().length-leeway);
     }
 
     public static void setItemsPlugin(GroundItemsPlugin plugin) {
@@ -182,6 +227,10 @@ public class Utils {
 
     public static void setAgilityPlugin(AgilityPlugin plugin) {
         Utils.agilityPlugin = plugin;
+    }
+
+    public static void setMotherlodePlugin(MotherlodePlugin plugin) {
+        Utils.motherlodePlugin = plugin;
     }
 
     public static void incrementAgility() {
@@ -193,6 +242,17 @@ public class Utils {
         if(config.bottingType()==TaskType.AGILITY && bot!=null)
             ((AgilityTask)bot).reset();
 
+    }
+
+    public static void moveToTarget(TileObject tileObject) {
+        if (tileObject.getClickbox() == null || !Utils.isCloseToPlayer(tileObject.getWorldLocation(),15)) {
+            WorldPoint target = findClosesTileInPath(tileObject.getWorldLocation(),15);
+            pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client,target)),0,0,5);
+        } else {
+            pointAt(Utils.getRandomPointInShape(tileObject.getClickbox()));
+        }
+        sleep();
+        click();
     }
 
     public static Point getRandomPointInShape(Shape s) {
@@ -215,5 +275,12 @@ public class Utils {
         if(location == null)
             location = new Point(0,0);
         return location;
+    }
+
+    public static void pickUpItem(GroundItem item) {
+        pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client, item.getLocation())));
+        sleep();
+        click();
+        sleep();
     }
 }

@@ -78,6 +78,7 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.OverlayMenuClicked;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.botutils.Utils;
 import net.runelite.client.task.Schedule;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.ui.overlay.OverlayMenuEntry;
@@ -145,9 +146,9 @@ public class MotherlodePlugin extends Plugin
 	private boolean shouldUpdateOres;
 	private Multiset<Integer> inventorySnapshot;
 
-	@Getter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PUBLIC)
 	private final Set<WallObject> veins = new HashSet<>();
-	@Getter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PUBLIC)
 	private final Set<GameObject> rocks = new HashSet<>();
 	@Getter(AccessLevel.PACKAGE)
 	private final Set<GameObject> brokenStruts = new HashSet<>();
@@ -161,6 +162,7 @@ public class MotherlodePlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
+		Utils.setMotherlodePlugin(this);
 		overlayManager.add(overlay);
 		overlayManager.add(sceneOverlay);
 		overlayManager.add(motherlodeGemOverlay);

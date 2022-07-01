@@ -43,6 +43,14 @@ public enum TaskType {
             System.out.println("STARTING LOOT");
             return new LootTask(client, config, plugin, itemsPlugin);
         }
+    },
+
+    MOTHERLOAD("Motherload Mine"){
+        @Override
+        public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin){
+            System.out.println("STARTING MOTHERLOAD");
+            return new MotherLodeTask(client, config, plugin, itemsPlugin);
+        }
     }
 
     ;
