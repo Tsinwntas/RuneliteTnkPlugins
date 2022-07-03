@@ -15,6 +15,7 @@ import net.runelite.client.plugins.botplugin.BotPluginPlugin;
 import net.runelite.client.plugins.grounditems.GroundItem;
 import net.runelite.client.plugins.grounditems.GroundItemsPlugin;
 import net.runelite.client.plugins.motherlode.MotherlodePlugin;
+import net.runelite.client.plugins.npchighlight.NpcIndicatorsPlugin;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -27,6 +28,7 @@ public class Utils {
     private static Client client;
     private static GroundItemsPlugin itemsPlugin;
     private static AgilityPlugin agilityPlugin;
+    private static NpcIndicatorsPlugin npcPlugin;
     private static MotherlodePlugin motherlodePlugin;
     private static Canvas canvas;
     public static BotTask bot;
@@ -91,8 +93,12 @@ public class Utils {
     }
 
     public static void sleep(int millis) {
+        sleep(millis, millis/15);
+    }
+
+    public static void sleep(int millis, int offset) {
         try {
-            int rand = (int) (Math.random() * (millis / 15.0) * (Math.random() > 0.5 ? 1 : -1));
+            int rand = (int) (Math.random() * offset * (Math.random() > 0.5 ? 1 : -1));
             Thread.sleep(millis + rand);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -122,26 +128,26 @@ public class Utils {
                 w.getCanvasLocation().getY() + w.getHeight() / 4 + 3), offset);
     }
 
-    public static void clickWidget(Widget w){
-        clickWidget(w,3);
+    public static void clickWidget(Widget w) {
+        clickWidget(w, 3);
     }
 
-    public static void clickWidget(Widget w, int offset){
-        pointAtWidget(w,offset);
+    public static void clickWidget(Widget w, int offset) {
+        pointAtWidget(w, offset);
         sleep();
         click();
     }
 
     public static boolean isCloseToPlayer(WorldPoint currentTarget, int maxDistance) {
-        return currentTarget.distanceTo(client.getLocalPlayer().getWorldLocation())<=maxDistance;
+        return currentTarget.distanceTo(client.getLocalPlayer().getWorldLocation()) <= maxDistance;
     }
 
     public static WorldPoint findClosesTileInPath(WorldPoint worldLocation, int maxDistance) {
         WorldPoint currentTarget = worldLocation;
         WorldPoint player = client.getLocalPlayer().getWorldLocation();
-        while(!isCloseToPlayer(currentTarget,maxDistance)){
-            currentTarget = new WorldPoint((int)((Math.random()<0.5 ? -1 : 1) * (Math.random()*3)+(currentTarget.getX()+ player.getX())/2),
-                    (int)((Math.random()<0.5 ? -1 : 1) * (Math.random()*3)+((currentTarget.getY()+player.getY())/2)),
+        while (!isCloseToPlayer(currentTarget, maxDistance)) {
+            currentTarget = new WorldPoint((int) ((Math.random() < 0.5 ? -1 : 1) * (Math.random() * 3) + (currentTarget.getX() + player.getX()) / 2),
+                    (int) ((Math.random() < 0.5 ? -1 : 1) * (Math.random() * 3) + ((currentTarget.getY() + player.getY()) / 2)),
                     player.getPlane());
         }
         return currentTarget;
@@ -163,6 +169,8 @@ public class Utils {
             ((AgilityTask) bot).agilityPlugin = agilityPlugin;
         if (Utils.config.bottingType() == TaskType.MOTHERLOAD)
             ((MotherLodeTask) bot).motherlodePlugin = motherlodePlugin;
+        if (Utils.config.bottingType() == TaskType.SLAYER)
+            ((SlayerTask) bot).npcPlugin = npcPlugin;
     }
 
     public static void stop() {
@@ -190,11 +198,6 @@ public class Utils {
 
     public static boolean isIdle() {
         return client.getLocalPlayer().getAnimation() == AnimationID.IDLE && isNotMoving();
-//        if(idle_){
-//            idle_ = false;
-//            return true;
-//        }
-//        return false;
     }
 
     public static boolean isNotMoving() {
@@ -202,7 +205,7 @@ public class Utils {
             sleep();
             lastPlayerLocation = null;
             return true;
-        }else{
+        } else {
             lastPlayerLocation = client.getLocalPlayer().getWorldLocation();
             sleep(300);
             return false;
@@ -210,7 +213,7 @@ public class Utils {
     }
 
     public static boolean isInventoryFull() {
-        return client.getItemContainer(InventoryID.INVENTORY) != null && Arrays.stream(client.getItemContainer(InventoryID.INVENTORY).getItems()).filter(i->i.getId()!=-1).count()==28;
+        return client.getItemContainer(InventoryID.INVENTORY) != null && Arrays.stream(client.getItemContainer(InventoryID.INVENTORY).getItems()).filter(i -> i.getId() != -1).count() == 28;
     }
 
     public static boolean isInventoryEmpty() {
@@ -218,36 +221,40 @@ public class Utils {
     }
 
     public static boolean isInventoryEmpty(int leeway) {
-        return client.getItemContainer(InventoryID.INVENTORY) == null || Arrays.stream(client.getItemContainer(InventoryID.INVENTORY).getItems()).filter(i->i.getId()==-1).count()>=(client.getItemContainer(InventoryID.INVENTORY).getItems().length-leeway);
+        return client.getItemContainer(InventoryID.INVENTORY) == null || Arrays.stream(client.getItemContainer(InventoryID.INVENTORY).getItems()).filter(i -> i.getId() == -1).count() >= (client.getItemContainer(InventoryID.INVENTORY).getItems().length - leeway);
     }
 
     public static void setItemsPlugin(GroundItemsPlugin plugin) {
-        Utils.itemsPlugin = plugin;
+        itemsPlugin = plugin;
     }
 
     public static void setAgilityPlugin(AgilityPlugin plugin) {
-        Utils.agilityPlugin = plugin;
+        agilityPlugin = plugin;
     }
 
     public static void setMotherlodePlugin(MotherlodePlugin plugin) {
-        Utils.motherlodePlugin = plugin;
+        motherlodePlugin = plugin;
+    }
+
+    public static void setNpcPlugin(NpcIndicatorsPlugin plugin) {
+        npcPlugin = plugin;
     }
 
     public static void incrementAgility() {
-        if(config.bottingType()==TaskType.AGILITY && bot!=null)
-            ((AgilityTask)bot).increment();
+        if (config.bottingType() == TaskType.AGILITY && bot != null)
+            ((AgilityTask) bot).increment();
     }
 
     public static void resetAgility() {
-        if(config.bottingType()==TaskType.AGILITY && bot!=null)
-            ((AgilityTask)bot).reset();
+        if (config.bottingType() == TaskType.AGILITY && bot != null)
+            ((AgilityTask) bot).reset();
 
     }
 
     public static void moveToTarget(TileObject tileObject) {
-        if (tileObject.getClickbox() == null || !Utils.isCloseToPlayer(tileObject.getWorldLocation(),15)) {
-            WorldPoint target = findClosesTileInPath(tileObject.getWorldLocation(),15);
-            pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client,target)),0,0,5);
+        if (tileObject.getClickbox() == null || !Utils.isCloseToPlayer(tileObject.getWorldLocation(), 15)) {
+            WorldPoint target = findClosesTileInPath(tileObject.getWorldLocation(), 15);
+            pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client, target)), 0, 0, 5);
         } else {
             pointAt(Utils.getRandomPointInShape(tileObject.getClickbox()));
         }
@@ -260,20 +267,20 @@ public class Utils {
         double randX = 0;
         double randY = 0;
         do {
-            randX = random.ints(s.getBounds().x+s.getBounds().width/4, s.getBounds().x + s.getBounds().width-s.getBounds().width/4)
+            randX = random.ints(s.getBounds().x + s.getBounds().width / 4, s.getBounds().x + s.getBounds().width - s.getBounds().width / 4)
                     .findFirst()
                     .getAsInt();
 
-            randY = random.ints(s.getBounds().y+s.getBounds().height/4, s.getBounds().y + s.getBounds().height-s.getBounds().height/4)
+            randY = random.ints(s.getBounds().y + s.getBounds().height / 4, s.getBounds().y + s.getBounds().height - s.getBounds().height / 4)
                     .findFirst()
                     .getAsInt();
         } while (!s.contains(randX, randY));
         return new Point((int) randX, (int) randY);
     }
 
-    public static Point getLocation(){
-        if(location == null)
-            location = new Point(0,0);
+    public static Point getLocation() {
+        if (location == null)
+            location = new Point(0, 0);
         return location;
     }
 

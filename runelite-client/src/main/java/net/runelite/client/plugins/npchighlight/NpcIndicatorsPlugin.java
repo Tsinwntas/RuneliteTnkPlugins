@@ -65,6 +65,7 @@ import net.runelite.client.game.npcoverlay.HighlightedNpc;
 import net.runelite.client.game.npcoverlay.NpcOverlayService;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.botutils.Utils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ColorUtil;
 import net.runelite.client.util.Text;
@@ -108,7 +109,7 @@ public class NpcIndicatorsPlugin extends Plugin
 	/**
 	 * NPCs to highlight
 	 */
-	@Getter(AccessLevel.PACKAGE)
+	@Getter(AccessLevel.PUBLIC)
 	private final Map<NPC, HighlightedNpc> highlightedNpcs = new HashMap<>();
 
 	/**
@@ -186,6 +187,7 @@ public class NpcIndicatorsPlugin extends Plugin
 			skipNextSpawnCheck = true;
 			rebuild();
 		});
+		Utils.setNpcPlugin(this);
 	}
 
 	@Override

@@ -55,31 +55,6 @@ public class BotPluginMinimapOverlay extends Overlay
 	public Dimension render(Graphics2D graphics)
 	{
 		Utils.onRenderChecks();
-		for (NPC npc : plugin.getHighlightedNpcs().keySet())
-		{
-			renderNpcOverlay(graphics, npc, npc.getName(), config.highlightColor());
-		}
 		return null;
-	}
-
-	private void renderNpcOverlay(Graphics2D graphics, NPC actor, String name, Color color)
-	{
-		NPCComposition npcComposition = actor.getTransformedComposition();
-		if (npcComposition == null || !npcComposition.isInteractible()
-			|| (actor.isDead() && config.ignoreDeadNpcs()))
-		{
-			return;
-		}
-
-		Point minimapLocation = actor.getMinimapLocation();
-		if (minimapLocation != null)
-		{
-			OverlayUtil.renderMinimapLocation(graphics, minimapLocation, color.darker());
-
-			if (config.drawMinimapNames())
-			{
-				OverlayUtil.renderTextLocation(graphics, minimapLocation, name, color);
-			}
-		}
 	}
 }

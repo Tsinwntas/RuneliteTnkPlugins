@@ -13,14 +13,6 @@ public enum TaskType {
         }
     },
 
-    SLAYER("Slayer"){
-        @Override
-        public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {
-            System.out.println("STARTING SLAYER");
-            return new SlayerTask(client, config, plugin, itemsPlugin);
-        }
-    },
-
     AGILITY("Agility"){
         @Override
         public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {
@@ -34,6 +26,14 @@ public enum TaskType {
         public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {
             System.out.println("STARTING ALCHEMY");
             return new AlchemyTask(client, config, plugin, itemsPlugin);
+        }
+    },
+
+    FLICKER("Flick Prayer"){
+        @Override
+        public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin){
+            System.out.println("STARTING FLICK PRAYER");
+            return new FlickPrayerTask(client, config, plugin);
         }
     },
 
@@ -51,7 +51,15 @@ public enum TaskType {
             System.out.println("STARTING MOTHERLOAD");
             return new MotherLodeTask(client, config, plugin, itemsPlugin);
         }
-    }
+    },
+
+    SLAYER("Slayer"){
+        @Override
+        public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {
+            System.out.println("STARTING SLAYER");
+            return new SlayerTask(client, config, plugin, itemsPlugin);
+        }
+    },
 
     ;
 

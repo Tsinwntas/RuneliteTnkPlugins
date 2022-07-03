@@ -5,6 +5,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.client.plugins.botplugin.BotPluginConfig;
 import net.runelite.client.plugins.botplugin.BotPluginPlugin;
 import net.runelite.client.plugins.grounditems.GroundItemsPlugin;
+import net.runelite.client.plugins.npchighlight.NpcIndicatorsPlugin;
 
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -35,6 +36,8 @@ public class SlayerTask extends BotTask {
         super(client,config,plugin, itemsPlugin);
         currentState = TaskState.IDLE;
     }
+
+    public NpcIndicatorsPlugin npcPlugin;
 
     @Override
     protected void performAction() {
@@ -129,14 +132,14 @@ public class SlayerTask extends BotTask {
     }
 
     private NPC findClosestTarget() {
-        if (plugin.getHighlightedNpcs().isEmpty())
+        if (npcPlugin.getHighlightedNpcs().isEmpty())
             return null;
         LocalPoint playerLoc = client.getLocalPlayer().getLocalLocation();
         NPC closest = null;
         boolean ignoreLast = false;
         if (npcsShareId())
             ignoreLast = true;
-        for (NPC npc : plugin.getHighlightedNpcs().keySet()) {
+        for (NPC npc : npcPlugin.getHighlightedNpcs().keySet()) {
             if(isNpcInteractingWithLocalPlayer(npc)){
                 return npc;
             }
@@ -155,7 +158,7 @@ public class SlayerTask extends BotTask {
     }
 
     private boolean npcsShareId() {
-        return plugin.getHighlightedNpcs().keySet().stream().filter(npc -> npc.getId() == plugin.getHighlightedNpcs().keySet().stream().findFirst().get().getId()).collect(Collectors.toList()).size() > 1;
+        return npcPlugin.getHighlightedNpcs().keySet().stream().filter(npc -> npc.getId() == npcPlugin.getHighlightedNpcs().keySet().stream().findFirst().get().getId()).collect(Collectors.toList()).size() > 1;
     }
 
     private boolean isNotSameAsLastTarget(NPC npc) {
