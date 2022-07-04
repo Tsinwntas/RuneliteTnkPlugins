@@ -28,8 +28,7 @@ public class AgilityTask extends BotTask {
 
         RELLEKA("Relleka", new int[]{ROUGH_WALL_14946, GAP_14947, TIGHTROPE_14987, GAP_14990, GAP_14991, TIGHTROPE_14992, PILE_OF_FISH}),
 
-        ARDOUGNE("Ardougne", new int[]{WOODEN_BEAMS, GAP_15609, PLANK_26635, GAP_15610, GAP_15611, STEEP_ROOF, GAP_15612})
-        ;
+        ARDOUGNE("Ardougne", new int[]{WOODEN_BEAMS, GAP_15609, PLANK_26635, GAP_15610, GAP_15611, STEEP_ROOF, GAP_15612});
 
 
         private String label;
@@ -68,18 +67,19 @@ public class AgilityTask extends BotTask {
 
     @Override
     protected void performAction() {
-        if(isNotRunning() && hasEnoughEnergy())
+        if (isNotRunning() && hasEnoughEnergy())
             toggleRun();
 
         Tile mark = null;
-        if(currentState != TaskState.MOVING && agilityPlugin.getMarksOfGrace().size()>0) {
+        if (currentState != TaskState.MOVING && agilityPlugin.getMarksOfGrace().size() > 0) {
             mark = agilityPlugin.getMarksOfGrace().get(0);
-            if(Utils.isCloseToPlayer(mark.getWorldLocation(),10) && mark.getWorldLocation().getPlane()==client.getLocalPlayer().getWorldLocation().getPlane())
+            if (Utils.isCloseToPlayer(mark.getWorldLocation(), 10) && mark.getWorldLocation().getPlane() == client.getLocalPlayer().getWorldLocation().getPlane())
                 currentState = TaskState.PICKING_UP_TOKEN;
         }
         switch (currentState) {
             case PICKING_UP_TOKEN:
-                Utils.moveToTarget(mark.getItemLayer());
+                if (mark != null)
+                    Utils.moveToTarget(mark.getItemLayer());
                 currentState = TaskState.MOVING;
                 break;
             case COURSING:
@@ -104,7 +104,7 @@ public class AgilityTask extends BotTask {
                 currentState = TaskState.MOVING;
                 break;
             case MOVING:
-                if(Utils.isIdle()) {
+                if (Utils.isIdle()) {
                     currentState = TaskState.COURSING;
                     break;
                 }
@@ -121,7 +121,7 @@ public class AgilityTask extends BotTask {
     }
 
     private boolean hasEnoughEnergy() {
-        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.RUN_ORB_TEXT).getText()) >=50;
+        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.RUN_ORB_TEXT).getText()) >= 50;
     }
 
     private void toggleRun() {
