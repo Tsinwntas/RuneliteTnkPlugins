@@ -104,21 +104,14 @@ public class AgilityTask extends BotTask {
                 currentState = TaskState.MOVING;
                 break;
             case MOVING:
-                if(Utils.isIdle())
+                if(Utils.isIdle()) {
                     currentState = TaskState.COURSING;
-//                if (lastPlayerLocation != null && lastPlayerLocation.distanceTo(client.getLocalPlayer().getWorldLocation()) == 0) {
-//                    Utils.sleep();
-//                    lastPlayerLocation = null;
-//                    currentState = TaskState.COURSING;
-//                }else{
-//                    lastPlayerLocation = client.getLocalPlayer().getWorldLocation();
-//                    Utils.sleep(300);
-//                }
-                break;
+                    break;
+                }
             case TIMED_OUT:
                 if ((timeout -= 500) <= 0) {
                     currentState = TaskState.COURSING;
-                    timeout = 2000;
+                    timeout = 5500;
                 }
                 break;
             default:

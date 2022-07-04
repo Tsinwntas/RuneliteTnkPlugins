@@ -252,7 +252,7 @@ public class Utils {
     }
 
     public static void moveToTarget(TileObject tileObject) {
-        if (tileObject.getClickbox() == null || !Utils.isCloseToPlayer(tileObject.getWorldLocation(), 15)) {
+        if (tileObject.getClickbox() == null || !tileObject.getWorldLocation().isInScene(client)){//!isCloseToPlayer(tileObject.getWorldLocation(), 15)) {
             WorldPoint target = findClosesTileInPath(tileObject.getWorldLocation(), 15);
             pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client, target)), 0, 0, 5);
         } else {
