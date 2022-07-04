@@ -4,6 +4,8 @@ import com.google.common.collect.Table;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
+import net.runelite.api.widgets.Widget;
+import net.runelite.api.widgets.WidgetID;
 import net.runelite.client.plugins.agility.AgilityPlugin;
 import net.runelite.client.plugins.agility.Obstacle;
 import net.runelite.client.plugins.botplugin.BotPluginConfig;
@@ -56,7 +58,6 @@ public class AgilityTask extends BotTask {
     private TaskState currentState;
     private int index;
     private AgilityCourse course;
-    private WorldPoint lastPlayerLocation;
 
     public AgilityTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {
         super(client, config, plugin, itemsPlugin);
@@ -67,6 +68,9 @@ public class AgilityTask extends BotTask {
 
     @Override
     protected void performAction() {
+        if(isNotRunning() && hasEnoughEnergy())
+            toggleRun();
+
         Tile mark = null;
         if(currentState != TaskState.MOVING && agilityPlugin.getMarksOfGrace().size()>0) {
             mark = agilityPlugin.getMarksOfGrace().get(0);
@@ -121,6 +125,24 @@ public class AgilityTask extends BotTask {
                 break;
         }
 
+    }
+
+    private boolean hasEnoughEnergy() {
+        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.RUN_ORB_TEXT).getText()) >=50;
+    }
+
+    private void toggleRun() {
+        Utils.clickWidget(getRunWidget());
+        Utils.sleep(500);
+    }
+
+    private boolean isNotRunning() {
+        return getRunWidget().getSpriteId() != 1065;
+    }
+
+    private Widget getRunWidget() {
+        //actual widget = 25 not the one in WidgetID
+        return client.getWidget(WidgetID.MINIMAP_GROUP_ID, 25);
     }
 
     @Override
