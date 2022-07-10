@@ -61,6 +61,14 @@ public enum TaskType {
         }
     },
 
+    THIEVING("Thieving") {
+        @Override
+        public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {
+            System.out.println("STARTING THIEVING");
+            return new ThievingTask(client, config, plugin, itemsPlugin);
+        }
+    },
+
     ;
 
     private String label;

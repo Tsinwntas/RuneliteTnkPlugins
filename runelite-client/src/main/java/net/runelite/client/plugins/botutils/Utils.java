@@ -165,12 +165,22 @@ public class Utils {
     }
 
     public static void extraPlugins(BotPluginConfig config) {
-        if (Utils.config.bottingType() == TaskType.AGILITY)
-            ((AgilityTask) bot).agilityPlugin = agilityPlugin;
-        if (Utils.config.bottingType() == TaskType.MOTHERLOAD)
-            ((MotherLodeTask) bot).motherlodePlugin = motherlodePlugin;
-        if (Utils.config.bottingType() == TaskType.SLAYER)
-            ((SlayerTask) bot).npcPlugin = npcPlugin;
+        switch (config.bottingType()) {
+            case AGILITY:
+                ((AgilityTask) bot).agilityPlugin = agilityPlugin;
+                break;
+            case MOTHERLOAD:
+                ((MotherLodeTask) bot).motherlodePlugin = motherlodePlugin;
+                break;
+            case SLAYER:
+                ((SlayerTask) bot).npcPlugin = npcPlugin;
+                break;
+            case THIEVING:
+                ((ThievingTask) bot).npcPlugin = npcPlugin;
+                break;
+            default:
+                break;
+        }
     }
 
     public static void stop() {
