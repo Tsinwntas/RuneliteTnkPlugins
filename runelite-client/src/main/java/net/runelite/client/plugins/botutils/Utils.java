@@ -9,6 +9,8 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.api.widgets.WidgetItem;
+import net.runelite.client.game.ItemClient;
+import net.runelite.client.game.ItemManager;
 import net.runelite.client.plugins.agility.AgilityPlugin;
 import net.runelite.client.plugins.botplugin.BotPluginConfig;
 import net.runelite.client.plugins.botplugin.BotPluginPlugin;
@@ -16,6 +18,7 @@ import net.runelite.client.plugins.grounditems.GroundItem;
 import net.runelite.client.plugins.grounditems.GroundItemsPlugin;
 import net.runelite.client.plugins.motherlode.MotherlodePlugin;
 import net.runelite.client.plugins.npchighlight.NpcIndicatorsPlugin;
+import net.runelite.http.api.item.ItemType;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -118,9 +121,9 @@ public class Utils {
     }
 
     public static void pointAtWidgetSlot(Widget w, int index, int offset) {
-        WidgetItem slot = w.getWidgetItem(index);
-        pointAt(new Point(slot.getCanvasLocation().getX() + slot.getCanvasBounds().width / 2 - 3,
-                slot.getCanvasLocation().getY() + slot.getCanvasBounds().height / 2 - 3), offset);
+        Widget slot = w.getChildren()[index];
+        pointAt(new Point( slot.getCanvasLocation().getX() + slot.getBounds().width / 2 - 3,
+                slot.getCanvasLocation().getY() + slot.getBounds().height / 2 - 3), offset);
     }
 
     public static void pointAtWidget(Widget w, int offset) {
@@ -299,5 +302,115 @@ public class Utils {
         sleep();
         click();
         sleep();
+    }
+//
+//    public static Item findInInventory(String item) {
+//        Item[] items = client.getItemContainer(InventoryID.INVENTORY).getItems();
+//        for(int i =0; i< items.length; i++ ){
+//            if(isMatchingItem(item, items[i]))
+//                return items[i];
+//        }
+//        return null;
+//    }
+//
+//    public static Item findInInventory(int id) {
+//        Item[] items = client.getItemContainer(InventoryID.INVENTORY).getItems();
+//        for(int i =0; i< items.length; i++ ){
+//            if( items[i].getId() == id )
+//                return items[i];
+//        }
+//        return null;
+//    }
+//
+//    public static void clickInventory(String item) {
+//        Item[] items = client.getItemContainer(InventoryID.INVENTORY).getItems();
+//        for(int i =0; i< items.length; i++ ){
+//            if(isMatchingItem(item, items[i])){
+//                Utils.pointAtInventorySlot(i,8);
+//                Utils.sleep();
+//                Utils.click();
+//            }
+//        }
+//    }
+//
+//    public static void clickInventory(int id) {
+//        Item[] items = client.getItemContainer(InventoryID.INVENTORY).getItems();
+//        for(int i =0; i< items.length; i++ ){
+//            if( items[i].getId() == id ){
+//                Utils.pointAtInventorySlot(i,8);
+//                Utils.sleep();
+//                Utils.click();
+//            }
+//        }
+//    }
+
+    public static int findInInventory(String item) {
+        return findItem(0, item, InventoryID.INVENTORY, false);
+    }
+
+    public static int clickInventory(String item) {
+        return findItem(0, item, InventoryID.INVENTORY, true);
+    }
+
+    public static int findInInventory(int id) {
+        return findItem(id, null, InventoryID.INVENTORY, false);
+    }
+
+    public static int clickInventory(int id) {
+        return findItem(id, null, InventoryID.INVENTORY, true);
+    }
+
+    public static int findInEquipment(String item) {
+        return findItem(0, item, InventoryID.EQUIPMENT, false);
+    }
+
+    public static int clickEquipment(String item) {
+        return findItem(0, item, InventoryID.EQUIPMENT, true);
+    }
+
+    public static int findInEquipment(int id) {
+        return findItem(id, null, InventoryID.EQUIPMENT, false);
+    }
+
+    public static int clickEquipment(int id) {
+        return findItem(id, null, InventoryID.EQUIPMENT, true);
+    }
+
+    public static int findItem(int id, String item, InventoryID inventoryId, boolean click) {
+        Item[] items = client.getItemContainer(inventoryId).getItems();
+        for(int i =0; i< items.length; i++ ){
+            if((item==null && items[i].getId() == id)  || (item!=null && isMatchingItem(item, items[i]))) {
+                if(click){
+                    Utils.pointAtInventorySlot(i,8);
+                    Utils.sleep();
+                    Utils.click();
+                }
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static boolean isMatchingItem(String itemName, Item item) {
+        return client.getItemDefinition(item.getId()).getName().toLowerCase().contentEquals(itemName.toLowerCase());
+    }
+
+
+    public static void clickAtInventorySlot(int index) {
+        pointAtInventorySlot(index,8);
+        sleep();
+        click();
+    }
+
+    public static Item getInventoryItem(int index) {
+        Item[] items = client.getItemContainer(InventoryID.INVENTORY).getItems();
+        if(items == null || items.length <= index)
+            return null;
+        return items[index];
+    }
+
+    public static int getHealth(){
+        //HEALTH TEXT = 5
+        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, 5).getText());
     }
 }

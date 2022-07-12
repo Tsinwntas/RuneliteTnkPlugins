@@ -46,9 +46,7 @@ public class AlchemyTask extends BotTask {
                     int index = findNextTarget();
                     if(index == -1)
                         break;
-                    Utils.pointAtInventorySlot(index,8);
-                    Utils.sleep();
-                    Utils.click();
+                    Utils.clickAtInventorySlot(index);
                     currentState = TaskState.WAITING_FOR_SPELL_BOOK;
                 }
                 break;
