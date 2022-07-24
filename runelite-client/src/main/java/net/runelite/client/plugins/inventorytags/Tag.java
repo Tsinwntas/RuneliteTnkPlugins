@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Adam <Adam@sigterm.info>
+ * Copyright (c) 2022, Adam <Adam@sigterm.info>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -22,28 +22,13 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package net.runelite.api.events;
+package net.runelite.client.plugins.inventorytags;
 
+import java.awt.Color;
 import lombok.Data;
-import net.runelite.api.GroundObject;
-import net.runelite.api.Tile;
 
-/**
- * An event where the {@link GroundObject} on a {@link Tile} has been changed.
- */
 @Data
-public class GroundObjectChanged
+class Tag
 {
-	/**
-	 * The affected tile.
-	 */
-	private Tile tile;
-	/**
-	 * The ground object that has been replaced.
-	 */
-	private GroundObject previous;
-	/**
-	 * The new ground object on the tile.
-	 */
-	private GroundObject groundObject;
+	Color color;
 }
