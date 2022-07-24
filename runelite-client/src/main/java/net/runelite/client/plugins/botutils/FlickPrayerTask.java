@@ -72,7 +72,8 @@ public class FlickPrayerTask extends BotTask {
     }
 
     private Widget getQuickPrayerWidget() {
-        return client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.QUICK_PRAYER_ORB);
+        //for some reason its 19 now
+        return client.getWidget(WidgetID.MINIMAP_GROUP_ID, 19/*WidgetID.Minimap.QUICK_PRAYER_ORB*/);
     }
 
     @Override
