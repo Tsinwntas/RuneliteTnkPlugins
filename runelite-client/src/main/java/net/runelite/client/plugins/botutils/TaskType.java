@@ -53,6 +53,14 @@ public enum TaskType {
         }
     },
 
+    NMZ("NMZ"){
+        @Override
+        public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin){
+            System.out.println("STARTING NMZ");
+            return new NMZTask(client, config, plugin);
+        }
+    },
+
     SLAYER("Slayer"){
         @Override
         public BotTask getTask(Client client, BotPluginConfig config, BotPluginPlugin plugin, GroundItemsPlugin itemsPlugin) {

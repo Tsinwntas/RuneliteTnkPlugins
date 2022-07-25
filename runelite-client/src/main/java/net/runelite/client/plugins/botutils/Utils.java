@@ -17,6 +17,7 @@ import net.runelite.client.plugins.botplugin.BotPluginPlugin;
 import net.runelite.client.plugins.grounditems.GroundItem;
 import net.runelite.client.plugins.grounditems.GroundItemsPlugin;
 import net.runelite.client.plugins.motherlode.MotherlodePlugin;
+import net.runelite.client.plugins.nightmarezone.NightmareZonePlugin;
 import net.runelite.client.plugins.npchighlight.NpcIndicatorsPlugin;
 import net.runelite.http.api.item.ItemType;
 
@@ -33,6 +34,7 @@ public class Utils {
     private static AgilityPlugin agilityPlugin;
     private static NpcIndicatorsPlugin npcPlugin;
     private static MotherlodePlugin motherlodePlugin;
+    private static NightmareZonePlugin nightmareZonePlugin;
     private static Canvas canvas;
     public static BotTask bot;
     private static Point location;
@@ -96,7 +98,7 @@ public class Utils {
     }
 
     public static void sleep(int millis) {
-        sleep(millis, millis/15);
+        sleep(millis, millis / 15);
     }
 
     public static void sleep(int millis, int offset) {
@@ -122,7 +124,7 @@ public class Utils {
 
     public static void pointAtWidgetSlot(Widget w, int index, int offset) {
         Widget slot = w.getChildren()[index];
-        pointAt(new Point( slot.getCanvasLocation().getX() + slot.getBounds().width / 2 - 3,
+        pointAt(new Point(slot.getCanvasLocation().getX() + slot.getBounds().width / 2 - 3,
                 slot.getCanvasLocation().getY() + slot.getBounds().height / 2 - 3), offset);
     }
 
@@ -174,6 +176,9 @@ public class Utils {
                 break;
             case MOTHERLOAD:
                 ((MotherLodeTask) bot).motherlodePlugin = motherlodePlugin;
+                break;
+            case NMZ:
+                ((NMZTask) bot).nmzPlugin_ = nightmareZonePlugin;
                 break;
             case SLAYER:
                 ((SlayerTask) bot).npcPlugin = npcPlugin;
@@ -253,6 +258,10 @@ public class Utils {
         npcPlugin = plugin;
     }
 
+    public static void setNmzPlugin(NightmareZonePlugin plugin) {
+        nightmareZonePlugin = plugin;
+    }
+
     public static void incrementAgility() {
         if (config.bottingType() == TaskType.AGILITY && bot != null)
             ((AgilityTask) bot).increment();
@@ -265,7 +274,7 @@ public class Utils {
     }
 
     public static void moveToTarget(TileObject tileObject) {
-        if (tileObject.getClickbox() == null || !tileObject.getWorldLocation().isInScene(client)){//!isCloseToPlayer(tileObject.getWorldLocation(), 15)) {
+        if (tileObject.getClickbox() == null || !tileObject.getWorldLocation().isInScene(client)) {//!isCloseToPlayer(tileObject.getWorldLocation(), 15)) {
             WorldPoint target = findClosesTileInPath(tileObject.getWorldLocation(), 15);
             pointAt(Utils.getActualPoint(LocalPoint.fromWorld(client, target)), 0, 0, 5);
         } else {
@@ -378,10 +387,10 @@ public class Utils {
 
     public static int findItem(int id, String item, InventoryID inventoryId, boolean click) {
         Item[] items = client.getItemContainer(inventoryId).getItems();
-        for(int i =0; i< items.length; i++ ){
-            if((item==null && items[i].getId() == id)  || (item!=null && isMatchingItem(item, items[i]))) {
-                if(click){
-                    Utils.pointAtInventorySlot(i,8);
+        for (int i = 0; i < items.length; i++) {
+            if ((item == null && items[i].getId() == id) || (item != null && isMatchingItem(item, items[i]))) {
+                if (click) {
+                    Utils.pointAtInventorySlot(i, 8);
                     Utils.sleep();
                     Utils.click();
                 }
@@ -397,20 +406,82 @@ public class Utils {
 
 
     public static void clickAtInventorySlot(int index) {
-        pointAtInventorySlot(index,8);
+        pointAtInventorySlot(index, 8);
         sleep();
         click();
     }
 
     public static Item getInventoryItem(int index) {
         Item[] items = client.getItemContainer(InventoryID.INVENTORY).getItems();
-        if(items == null || items.length <= index)
+        if (items == null || items.length <= index)
             return null;
         return items[index];
     }
 
-    public static int getHealth(){
+    public static int getHealth() {
         //HEALTH TEXT = 5
-        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, 5).getText());
+        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.HEALTH_ORB+3).getText());
+    }
+
+    public static int getPrayer() {
+        //PRAYER TEXT = 18
+        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.PRAYER_ORB_TEXT).getText());
+    }
+
+    public static boolean isInventoryShown() {
+        return isVisible(WidgetID.INVENTORY_GROUP_ID);
+    }
+
+    public static Widget getInventoryBottomBarWidget() {
+        return getBottomBarWidget(WidgetID.ResizableViewportBottomLine.INVENTORY_TAB);
+    }
+
+    public static boolean isAttackStylesShown() {
+        return isVisible(WidgetID.COMBAT_GROUP_ID);
+    }
+
+    public static Widget getAttackStylesBottomBarWidget() {
+        return getBottomBarWidget(WidgetID.ResizableViewportBottomLine.CMB_ICON);
+    }
+
+    public static boolean isPrayerShown() {
+        return isVisible(WidgetID.PRAYER_GROUP_ID);
+    }
+
+    public static Widget getPrayerBottomBarWidget() {
+        return getBottomBarWidget(WidgetID.ResizableViewportBottomLine.PRAYER_TAB);
+    }
+
+    public static boolean isEquipmnentsShown() {
+        return isVisible(WidgetID.EQUIPMENT_GROUP_ID);
+    }
+
+    public static Widget getEquipmentBottomBarWidget() {
+        return getBottomBarWidget(WidgetID.ResizableViewportBottomLine.EQUIP_ICON);
+    }
+
+    private static boolean isVisible(int widgetId) {
+        return !client.getWidget(widgetId, 0).isHidden();
+    }
+
+    private static Widget getBottomBarWidget(int widgetId) {
+        return client.getWidget(WidgetID.RESIZABLE_VIEWPORT_BOTTOM_LINE_GROUP_ID, widgetId);
+    }
+
+    public static NPC findClosestTarget() {
+        LocalPoint playerLoc = client.getLocalPlayer().getLocalLocation();
+        NPC closest = null;
+        for (NPC npc : client.getNpcs()) {
+            if (npc.getInteracting() != null || npc.isDead())
+                continue;
+            if (isClosest(playerLoc, closest, npc))
+                closest = npc;
+        }
+        return closest;
+    }
+
+    private static boolean isClosest(LocalPoint playerLoc, NPC closest, NPC npc) {
+        return closest == null || getDistance(playerLoc, npc.getLocalLocation())
+                < getDistance(playerLoc, closest.getLocalLocation());
     }
 }

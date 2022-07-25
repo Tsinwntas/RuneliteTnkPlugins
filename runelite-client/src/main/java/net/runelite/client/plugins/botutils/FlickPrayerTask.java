@@ -53,7 +53,7 @@ public class FlickPrayerTask extends BotTask {
         }
     }
 
-    private boolean isInCombat() {
+    boolean isInCombat() {
         return client.getLocalPlayer().getInteracting() != null;
     }
 
@@ -63,17 +63,16 @@ public class FlickPrayerTask extends BotTask {
         Utils.sleep(i, config.offset());
     }
 
-    private boolean isPrayerInactive() {
+    boolean isPrayerInactive() {
         return getQuickPrayerWidget().getActions()[0].contentEquals("Activate");
     }
 
-    private void toggleQuickPrayer() {
+    void toggleQuickPrayer() {
         Utils.clickWidget(getQuickPrayerWidget());
     }
 
     private Widget getQuickPrayerWidget() {
-        //for some reason its 19 now
-        return client.getWidget(WidgetID.MINIMAP_GROUP_ID, 19/*WidgetID.Minimap.QUICK_PRAYER_ORB*/);
+        return client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.QUICK_PRAYER_ORB);
     }
 
     @Override

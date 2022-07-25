@@ -44,6 +44,7 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.plugins.botutils.Utils;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.Text;
 
@@ -92,6 +93,7 @@ public class NightmareZonePlugin extends Plugin
 
 		absorptionNotificationSend = true;
 		overloadNotificationSend = false;
+		Utils.setNmzPlugin(this);
 	}
 
 	@Override
