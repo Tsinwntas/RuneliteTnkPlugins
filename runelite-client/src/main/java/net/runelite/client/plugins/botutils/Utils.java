@@ -4,7 +4,7 @@ import net.runelite.api.*;
 import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
-import net.runelite.api.events.GameTick;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
 import net.runelite.api.widgets.WidgetInfo;
@@ -201,13 +201,6 @@ public class Utils {
             bot.onChatChecks(msg);
     }
 
-    public static void setNpcDialog(GameTick event) {
-        Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
-        if (bot != null && npcDialog != null) {
-//            bot.onChatChecks();
-        }
-    }
-
     public static void onRenderChecks() {
         if (bot != null) {
             bot.onRenderChecks();
@@ -400,6 +393,17 @@ public class Utils {
         return -1;
     }
 
+    public static int findAnyItem(int... ids) {
+        Item[] items = client.getItemContainer(InventoryID.INVENTORY).getItems();
+        for (int i = 0; i < items.length; i++) {
+            for(int id : ids){
+                if(id == items[i].getId())
+                    return i;
+            }
+        }
+        return -1;
+    }
+
     private static boolean isMatchingItem(String itemName, Item item) {
         return client.getItemDefinition(item.getId()).getName().toLowerCase().contentEquals(itemName.toLowerCase());
     }
@@ -424,8 +428,11 @@ public class Utils {
     }
 
     public static int getPrayer() {
-        //PRAYER TEXT = 18
         return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.PRAYER_ORB_TEXT).getText());
+    }
+
+    public static int getSpec() {
+        return Integer.parseInt(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.SPEC_ORB+3).getText());
     }
 
     public static boolean isInventoryShown() {
@@ -469,10 +476,14 @@ public class Utils {
     }
 
     public static NPC findClosestTarget() {
+        return findClosestTarget(false);
+    }
+
+    public static NPC findClosestTarget(boolean anyTarget) {
         LocalPoint playerLoc = client.getLocalPlayer().getLocalLocation();
         NPC closest = null;
         for (NPC npc : client.getNpcs()) {
-            if (npc.getInteracting() != null || npc.isDead())
+            if ((!anyTarget && npc.getInteracting() != null) || npc.isDead())
                 continue;
             if (isClosest(playerLoc, closest, npc))
                 closest = npc;
@@ -483,5 +494,30 @@ public class Utils {
     private static boolean isClosest(LocalPoint playerLoc, NPC closest, NPC npc) {
         return closest == null || getDistance(playerLoc, npc.getLocalLocation())
                 < getDistance(playerLoc, closest.getLocalLocation());
+    }
+
+    public static void setNpcDialog(GameTick event) {
+        Widget npcDialog = client.getWidget(WidgetInfo.DIALOG_NPC_TEXT);
+        if (bot != null && npcDialog != null) {
+            bot.onChatChecks(npcDialog.getText());
+        }
+    }
+
+    public static void notifyTask(){
+        bot.notifyTask();
+    }
+
+    public static void onGameObjectSpawned(GameObjectSpawned event) {
+        bot.onGameObjectSpawned(event);
+    }
+
+    public static void onGameObjectDespawned(GameObjectDespawned event) { bot.onGameObjectDespawned(event); }
+
+    public static void onGroundObjectSpawned(GroundObjectSpawned event) {
+        bot.onGroundObjectSpawned(event);
+    }
+
+    public static void onItemSpawned(ItemSpawned event) {
+        bot.onItemSpawned(event);
     }
 }

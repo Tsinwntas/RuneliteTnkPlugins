@@ -51,6 +51,17 @@ public interface BotPluginConfig extends Config
 		return TaskType.NONE;
 	}
 
+	@ConfigItem(
+			position = 1,
+			keyName = "dev",
+			name = "Developer Mode",
+			description = "Perform only some actions.",
+			section = bottingSection
+	)
+	default boolean isDev() {
+		return false;
+	}
+
 	@ConfigSection(
 			name = "Agility",
 			description = "",
@@ -128,6 +139,35 @@ public interface BotPluginConfig extends Config
 			section = flickSection
 	)
 	default boolean forceClick() {
+		return false;
+	}
+
+	@ConfigSection(
+			name = "NMZ",
+			description = "",
+			position = 1
+	)
+	String nmzSection = "NMZSection";
+
+	@ConfigItem(
+			position = 0,
+			keyName = "useSpecials",
+			name = "Use Specials",
+			description = "Use Specials if value >= X",
+			section = nmzSection
+	)
+	default int useSpecials() {
+		return 100;
+	}
+
+	@ConfigItem(
+			position = 1,
+			keyName = "usePowerUps",
+			name = "Use Special Power ups",
+			description = "Use Specials Attack Orbs",
+			section = nmzSection
+	)
+	default boolean chaseOrbs() {
 		return false;
 	}
 

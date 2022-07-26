@@ -104,21 +104,28 @@ public class BotPluginPlugin extends Plugin
 		Utils.setNpcDialog(event);
 	}
 
-//    @Subscribe
-//    public void onItemSpawned(ItemSpawned itemSpawned) {
-//        TileItem item = itemSpawned.getItem();
-//        Tile tile = itemSpawned.getTile();
-//
-//        GroundItem groundItem = buildGroundItem(tile, item);
-//
-//        GroundItem.GroundItemKey groundItemKey = new GroundItem.GroundItemKey(item.getId(), tile.getWorldLocation());
-//        GroundItem existing = collectedGroundItems.putIfAbsent(groundItemKey, groundItem);
-//        if (existing != null) {
-//            existing.setQuantity(existing.getQuantity() + groundItem.getQuantity());
-//            // The spawn time remains set at the oldest spawn
-//        }
-//
-//        if (!config.onlyShowLoot()) {
-//            notifyHighlightedItem(groundItem);
-//        }
+	@Subscribe
+	public void onGameObjectSpawned(GameObjectSpawned event)
+	{
+		Utils.onGameObjectSpawned(event);
+	}
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		Utils.onGameObjectDespawned(event);
+	}
+
+	@Subscribe
+	public void onGroundObjectSpawned(GroundObjectSpawned event)
+	{
+		Utils.onGroundObjectSpawned(event);
+
+	}
+
+	@Subscribe
+	public void onItemSpawned(ItemSpawned event)
+	{
+		Utils.onItemSpawned(event);
+	}
 }

@@ -1,6 +1,10 @@
 package net.runelite.client.plugins.botutils;
 
 import net.runelite.api.Client;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GroundObjectSpawned;
+import net.runelite.api.events.ItemSpawned;
 import net.runelite.client.plugins.botplugin.BotPluginConfig;
 import net.runelite.client.plugins.botplugin.BotPluginPlugin;
 import net.runelite.client.plugins.grounditems.GroundItemsPlugin;
@@ -47,4 +51,18 @@ public abstract class BotTask extends Thread {
     public void onChatChecks(String msg){};
 
     public abstract void onRenderChecks();
+
+    public void notifyTask(){};
+
+    public void onGameObjectSpawned(GameObjectSpawned event) {
+    }
+
+    public void onGameObjectDespawned(GameObjectDespawned event){}
+
+
+    public void onGroundObjectSpawned(GroundObjectSpawned event) {
+    }
+
+    public void onItemSpawned(ItemSpawned event) {
+    }
 }
