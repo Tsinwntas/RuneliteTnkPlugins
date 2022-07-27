@@ -1,14 +1,10 @@
 package net.runelite.client.plugins.botutils;
 
 import net.runelite.api.*;
-import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GroundObjectSpawned;
-import net.runelite.api.events.ItemSpawned;
-import net.runelite.api.widgets.Widget;
 import net.runelite.api.widgets.WidgetID;
-import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.botplugin.BotPluginConfig;
 import net.runelite.client.plugins.botplugin.BotPluginPlugin;
 import net.runelite.client.plugins.nightmarezone.NightmareZonePlugin;
@@ -20,12 +16,14 @@ public class NMZTask extends FlickPrayerTask {
     private TileObject target_;
     private long lastInteraction;
     private long lastOverload;
+    private long lastSuperPotion;
 
 
     public NMZTask(Client client, BotPluginConfig config, BotPluginPlugin plugin) {
         super(client,config,plugin);
         lastInteraction = System.currentTimeMillis();
         lastOverload = 0;
+        lastSuperPotion = 0;
     }
 
     @Override
@@ -38,7 +36,10 @@ public class NMZTask extends FlickPrayerTask {
             return;
         if(getInactivity())
             interact();
+
         checkForOverload();
+        checkForSuperPotions();
+
         if(target_ != null && Utils.getDistance(client.getLocalPlayer().getLocalLocation(), target_.getLocalLocation())>3){
             try {
                 Utils.moveToTarget(target_);
@@ -59,6 +60,17 @@ public class NMZTask extends FlickPrayerTask {
             if(Utils.getPrayer()>0)
                 super.performAction();
             performPhaseThree();
+        }
+    }
+
+    private void checkForSuperPotions() {
+        if(System.currentTimeMillis() - lastSuperPotion > 10 * 60 * 1000){
+            lastSuperPotion = System.currentTimeMillis();
+            int potion = Utils.findAnyItem(ItemID.SUPER_RANGING_1, ItemID.SUPER_RANGING_2, ItemID.SUPER_RANGING_3, ItemID.SUPER_RANGING_4, ItemID.SUPER_MAGIC_POTION_1, ItemID.SUPER_MAGIC_POTION_2, ItemID.SUPER_MAGIC_POTION_3, ItemID.SUPER_MAGIC_POTION_4);
+            if(potion>-1){
+                Utils.clickAtInventorySlot(potion);
+                Utils.sleep(1000);
+            }
         }
     }
 
