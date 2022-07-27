@@ -30,18 +30,22 @@ public class NMZTask extends FlickPrayerTask {
 
     @Override
     protected void performAction() {
-        if(config.isDev())
+        if(config.isDev()) {
+            checkForOverload();
             return;
+        }
         if(!nmzPlugin_.isInNightmareZone())
             return;
         if(getInactivity())
             interact();
-        if(isOverloadAcceptable() && Utils.getHealth()>50){
-            drinkOverload();
-        }
+        checkForOverload();
         if(target_ != null && Utils.getDistance(client.getLocalPlayer().getLocalLocation(), target_.getLocalLocation())>3){
-            Utils.moveToTarget(target_);
-            Utils.sleep(1000);
+            try {
+                Utils.moveToTarget(target_);
+                Utils.sleep(1000);
+            } catch (Exception e){
+                target_ = null;
+            }
         }
         if(Utils.getSpec()>=config.useSpecials() && isSpecInactive())
             Utils.clickWidget(client.getWidget(WidgetID.MINIMAP_GROUP_ID, WidgetID.Minimap.SPEC_ORB));
@@ -55,6 +59,12 @@ public class NMZTask extends FlickPrayerTask {
             if(Utils.getPrayer()>0)
                 super.performAction();
             performPhaseThree();
+        }
+    }
+
+    private void checkForOverload() {
+        if (isOverloadAcceptable() && Utils.getHealth() > 50) {
+            drinkOverload();
         }
     }
 
@@ -93,6 +103,8 @@ public class NMZTask extends FlickPrayerTask {
                 return;
 
             checkPrayer();
+            checkForOverload();
+
             Utils.clickAtInventorySlot(0);
             Utils.sleep(200);
         }
@@ -117,7 +129,7 @@ public class NMZTask extends FlickPrayerTask {
             lastOverload = System.currentTimeMillis();
             checkPrayer();
             Utils.clickAtInventorySlot(absorptionIndex);
-            Utils.sleep(200);
+            Utils.sleep(10000);
         }
     }
 
@@ -132,6 +144,7 @@ public class NMZTask extends FlickPrayerTask {
         while(Utils.getHealth()>1) {
             if(!nmzPlugin_.isInNightmareZone())
                 return;
+            checkForOverload();
             Utils.clickAtInventorySlot(0);
             Utils.sleep(300);
         }
